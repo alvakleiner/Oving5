@@ -19,6 +19,7 @@ public class GUI extends Application {
     private final TextField heartsField = new TextField();
     private final TextField queenField = new TextField();
     private final TextField flushField = new TextField();
+    private final Label errorLabel = new Label();
 
     @Override
     public void start(Stage stage) {
@@ -27,6 +28,7 @@ public class GUI extends Application {
         heartsField.setEditable(false);
         queenField.setEditable(false);
         flushField.setEditable(false);
+        errorLabel.setStyle("-fx-text-fill: red;");
 
         Button dealButton = new Button("Deal hand");
         Button checkButton = new Button("Check hand");
@@ -43,7 +45,8 @@ public class GUI extends Application {
                 new Label("Hearts:"), heartsField,
                 new Label("Queen of spades:"), queenField,
                 new Label("Flush:"), flushField,
-                newDeckButton
+                newDeckButton,
+                errorLabel
         );
 
         layout.setPadding(new Insets(20));
@@ -55,9 +58,14 @@ public class GUI extends Application {
 
     private void dealHand() {
         if (deck.getDeck().size() < 5) {
-            handField.setText("Not enough cards in deck");
+            clearResults();
+            handField.clear();
+            hand = null;
+            errorLabel.setText("Not enough cards in deck");
             return;
         }
+        errorLabel.setText("");
+
         hand = deck.dealHand(5);
         String handString = hand.getCards().stream()
                 .map(PlayingCard::getAsString)
@@ -68,9 +76,10 @@ public class GUI extends Application {
 
     private void checkHand() {
         if (hand == null) {
-            sumField.setText("No hand dealt yet");
+            errorLabel.setText("No hand dealt yet");
             return;
         }
+        errorLabel.setText("");
 
         sumField.setText(String.valueOf(hand.getSumOfFaces()));
 
@@ -88,6 +97,7 @@ public class GUI extends Application {
         hand = null;
         handField.clear();
         clearResults();
+        errorLabel.setText("");
     }
 
     private void clearResults() {
